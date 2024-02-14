@@ -3,7 +3,6 @@ import axios from 'axios';
 import styles from './WeatherInput.module.css';
 
 export default function WeatherInput() {
-  const [data, setData] = useState<IGeoLocate[]>([]);
   const [city, setCity] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [currentWeather, setCurrentWeather] = useState<ICurrentWeather | null>(null);
@@ -17,11 +16,13 @@ export default function WeatherInput() {
       return;
     }
 
-    const apiKey = "adde705039c7ae211b506002745e0523";
+    const apiKey = process.env.NEXT_PUBLIC_API_KEY;
+
     const url = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&appid=${apiKey}`;
 
     try {
       const response = await axios.get<IGeoLocate[]>(url);
+
       const [location] = response.data;
 
       if (!location) {
@@ -29,8 +30,13 @@ export default function WeatherInput() {
         return;
       }
 
-      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lon}&appid=${apiKey}`;
-      const currentWeatherResponse = await axios.get<IWeatherApiResponse>(weatherUrl);
+      const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lon}&appid=${apiKey}`;
+
+      const fiveDayForecastUrl = `api.openweathermap.org/data/2.5/forecast?lat=${location.lat}&lon=${location.lon}&appid=${apiKey}`
+
+      const currentWeatherResponse = await axios.get<IWeatherApiResponse>(currentWeatherUrl);
+
+      const fiveDayForecast = await axios.get<IWeatherApiResponse>(fiveDayForecastUrl);
 
       const currentWeatherData: ICurrentWeather = {
         lastUpdated: new Date(currentWeatherResponse.data.dt * 1000).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
@@ -45,10 +51,6 @@ export default function WeatherInput() {
       setErrorMessage('Error fetching data. Please try again later');
     }
   };
-
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
 
   return (
     <div>

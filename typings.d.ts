@@ -60,3 +60,7 @@ interface ICurrentWeather {
     weather: string;
     windSpeed: number;
   }
+
+  interface IFiveDayForecast {
+    
+  }
