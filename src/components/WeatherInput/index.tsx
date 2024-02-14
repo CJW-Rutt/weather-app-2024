@@ -17,7 +17,6 @@ export default function WeatherInput() {
       return;
     }
 
-    const apiKey = "adde705039c7ae211b506002745e0523";
     const url = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&appid=${apiKey}`;
 
     try {
