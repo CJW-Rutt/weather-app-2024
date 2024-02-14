@@ -6,6 +6,7 @@ export default function WeatherInput() {
   const [city, setCity] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [currentWeather, setCurrentWeather] = useState<ICurrentWeather | null>(null);
+  const [forecast, setForecast] = useState('');
 
   const handleFormSubmit = async () => {
     setErrorMessage('');
@@ -29,14 +30,16 @@ export default function WeatherInput() {
         setErrorMessage('City not found');
         return;
       }
-
+      console.log(location);
       const currentWeatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lon}&appid=${apiKey}`;
 
-      const fiveDayForecastUrl = `api.openweathermap.org/data/2.5/forecast?lat=${location.lat}&lon=${location.lon}&appid=${apiKey}`
+      const fiveDayForecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${location.lat}&lon=${location.lon}&appid=${apiKey}`
 
       const currentWeatherResponse = await axios.get<IWeatherApiResponse>(currentWeatherUrl);
 
-      const fiveDayForecast = await axios.get<IWeatherApiResponse>(fiveDayForecastUrl);
+      const fiveDayForecast = await axios.get(fiveDayForecastUrl);
+
+      //console.log(fiveDayForecast.data);
 
       const currentWeatherData: ICurrentWeather = {
         lastUpdated: new Date(currentWeatherResponse.data.dt * 1000).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
@@ -46,11 +49,17 @@ export default function WeatherInput() {
       };
 
       setCurrentWeather(currentWeatherData);
+      setForecast(fiveDayForecast.data);
     } catch (error) {
       console.error('Error fetching data:', error);
       setErrorMessage('Error fetching data. Please try again later');
     }
   };
+
+  useEffect(() => {
+    console.log('FORECAST DATA BELOW: ')
+    console.log(forecast);
+  }, [forecast])
 
   return (
     <div>
@@ -67,6 +76,7 @@ export default function WeatherInput() {
           <p>Wind Speed: {currentWeather.windSpeed} m/s</p>
         </div>
       )}
+      {/* { fiveDayForecast.data && fiveDayForecast.data.map  } */}
     </div>
   )
 }
