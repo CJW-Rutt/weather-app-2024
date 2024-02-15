@@ -21,7 +21,7 @@ export default function WeatherInput() {
 
     const apiKey = process.env.NEXT_PUBLIC_API_KEY;
 
-    const url = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&appid=${apiKey}`;
+    const url = `https://api.openweathermap.org/geo/1.0/direct?q=${city}&appid=${apiKey}`;
 
     try {
       const response = await axios.get<IGeoLocate[]>(url);
