@@ -2,9 +2,9 @@ import styles from './ImageContainer.module.css';
 
 import images from '../../images/clear.png'
 
-export default function ImageContainer({ weather }) {
+export default function ImageContainer({ weather }: IImageContainerProps) {
 
-    const getImageForWeather = (weather) => {
+    const getImageForWeather = (weather: string) => {
         switch (weather.toLowerCase()) {
             case 'clouds':
                 return 'clouds.png';

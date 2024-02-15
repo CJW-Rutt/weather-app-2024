@@ -75,6 +75,9 @@ interface IFiveDayForecast {
   };
 }
 
+interface IImageContainerProps {
+    weather: string;
+}
 
 
 
