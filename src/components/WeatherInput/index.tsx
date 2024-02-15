@@ -100,7 +100,7 @@ export default function WeatherInput() {
       )}
       { forecast.length > 0 && <h2 className={styles.sectionTitle}>Five Day Forecast / 3 Hours</h2>}
       {forecast.map((forecastItem: any, index: number) => (
-        <div key={index} className={styles.forecastContainerOuter}>
+        <div key={index} className={styles}>
           <div className={styles.forecastContainer}>
             <div className={styles.forecastLeftCol}>
               <h3 className={styles.forecastDate}><b>{forecastItem.dt_txt}</b></h3>
