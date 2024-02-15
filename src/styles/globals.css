@@ -5,8 +5,8 @@
 :root {
   --primary-color: #0F8B8D;
   --secondary-color: #143642;
-  --tertiary-color: #BBDEF0;
-  --background-color: #F7FFF6;
+  --tertiary-color: #0D5C63;
+  --background-color: white;
   --font-color: #222324;
 }
 
@@ -18,4 +18,10 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+}
+
+.main {
+  min-height: 100vh;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
 }

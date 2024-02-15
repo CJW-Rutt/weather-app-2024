@@ -52,15 +52,30 @@ interface IWeatherApiResponse {
     id: number;
     name: string;
     cod: number;
-  }
+}
 
 interface ICurrentWeather {
     lastUpdated: string;
     temperature: number;
     weather: string;
     windSpeed: number;
-  }
+}
 
-  interface IFiveDayForecast {
-    
-  }
+interface IFiveDayForecast {
+  dt_txt: string;
+  main: {
+    temp: number;
+  };
+  weather: {
+    main: string;
+    description: string;
+  }[];
+  wind: {
+    speed: number;
+  };
+}
+
+
+
+
+
