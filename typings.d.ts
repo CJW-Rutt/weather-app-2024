@@ -61,26 +61,28 @@ interface ICurrentWeather {
     windSpeed: number;
 }
 
+interface IForecastInfo {
+  dt_txt: string;
+  temp: number;
+  weather: string;
+  description: string;
+  windSpeed: number;
+}
+
+interface IForecastItem {
+  dt: number;
+  main: { temp: number };
+  weather: { main: string; description: string }[];
+  wind: { speed: number };
+}
+
 interface IFiveDayForecast {
-  list: {
-    dt_txt: string;
-    main: {
-      temp: number;
-    };
-    weather: {
-      main: string;
-      description: string;
-    }[];
-    wind: {
-      speed: number;
-    };
-  }[];
+  list: IForecastItem[];
 }
 
 
 interface IImageContainerProps {
     weather: string;
-
 }
 
 

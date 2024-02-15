@@ -8,7 +8,7 @@ export default function WeatherInput() {
   const [city, setCity] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [currentWeather, setCurrentWeather] = useState<ICurrentWeather | null>(null);
-  const [forecast, setForecast] = useState<IFiveDayForecast[]>([]);
+  const [forecast, setForecast] = useState<IForecastInfo[]>([]);
 
   const handleFormSubmit = async () => {
     setErrorMessage('');
@@ -37,41 +37,43 @@ export default function WeatherInput() {
 
       const fiveDayForecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${location.lat}&lon=${location.lon}&appid=${apiKey}`;
 
-      const [currentWeatherResponse, fiveDayForecastResponse] = await Promise.all([
-        axios.get<IWeatherApiResponse>(currentWeatherUrl),
-        axios.get<IFiveDayForecast>(fiveDayForecastUrl)
-      ]);
-
-      const currentWeatherData: ICurrentWeather = {
-        lastUpdated: new Date(currentWeatherResponse.data.dt * 1000).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
-        temperature: Math.round(currentWeatherResponse.data.main.temp - 273.15),
-        weather: currentWeatherResponse.data.weather[0].main,
-        windSpeed: currentWeatherResponse.data.wind.speed
-      };
-
-      const formattedForecast = fiveDayForecastResponse.data.list.map(forecastItem => ({
-        dt_txt: new Date(forecastItem.dt_txt).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }),
-        main: {
-          temp: parseFloat(forecastItem.main.temp.toFixed(1))
-        },
-        weather: [{
-          main: forecastItem.weather[0].main,
-          description: forecastItem.weather[0].description
-        }],
-        wind: { 
-          speed: forecastItem.wind.speed
-        }
-      }));
+      try {
+        const [currentWeatherResponse, fiveDayForecastResponse] = await Promise.all([
+          axios.get<IWeatherApiResponse>(currentWeatherUrl),
+          axios.get<IFiveDayForecast>(fiveDayForecastUrl)
+        ]);
       
-
-      setCurrentWeather(currentWeatherData);
-      setForecast(formattedForecast); 
+        console.log(currentWeatherResponse);
+        console.log(fiveDayForecastResponse);
       
+        const currentWeatherData: ICurrentWeather = {
+          lastUpdated: new Date(currentWeatherResponse.data.dt * 1000).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+          temperature: Math.round(currentWeatherResponse.data.main.temp - 273.15),
+          weather: currentWeatherResponse.data.weather[0].main,
+          windSpeed: currentWeatherResponse.data.wind.speed
+        };
+      
+        const formattedForecast: IForecastInfo[] = fiveDayForecastResponse.data.list.map((forecastItem: any) => {
+          const weatherMain = forecastItem.weather.length > 0 ? forecastItem.weather[0].main : '';
+          const weatherDescription = forecastItem.weather.length > 0 ? forecastItem.weather[0].description : '';
+          
+          return {
+            dt_txt: new Date(forecastItem.dt * 1000).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+            temp: parseFloat(forecastItem.main.temp.toFixed(1)),
+            weather: weatherMain,
+            description: weatherDescription,
+            windSpeed: forecastItem.wind.speed
+          };
+        });
+        setCurrentWeather(currentWeatherData);
+        setForecast(formattedForecast);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setErrorMessage('Error fetching data. Please try again later');
+      } 
     } catch (error) {
-
       console.error('Error fetching data:', error);
       setErrorMessage('Error fetching data. Please try again later');
-
     }
   };
 
@@ -99,28 +101,30 @@ export default function WeatherInput() {
         </div>
       )}
       { forecast.length > 0 && <h2 className={styles.sectionTitle}>Five Day Forecast / 3 Hours</h2>}
-      {forecast.map((forecastItem: any, index: number) => (
-        <div key={index} className={styles}>
-          <div className={styles.forecastContainer}>
-            <div className={styles.forecastLeftCol}>
-              <h3 className={styles.forecastDate}><b>{forecastItem.dt_txt}</b></h3>
-              {forecastItem.main && (
+      {forecast.map((forecastItem: any, index: number) => {
+        console.log(forecastItem.weather);
+        return (
+          <div key={index} className={styles.outerContainer}>
+            <div className={styles.forecastContainer}>
+              <div className={styles.forecastLeftCol}>
+                <h3 className={styles.forecastDate}><b>{forecastItem.dt_txt}</b></h3>
                 <div className={styles.forecastEntry}>
-                <p><b>Temperature:</b> {forecastItem.main.temp} °C</p>
-                <p><b>Weather:</b> {forecastItem.weather[0].main}</p>
-                <p><b>Desc:</b> {forecastItem.weather[0].description}</p>
-                <p><b>Wind Speed:</b> {forecastItem.wind.speed} m/s</p>
+                  <p><b>Temperature:</b> {forecastItem.temp} °C</p>
+                  <p><b>Weather:</b> {forecastItem.weather}</p>
+                  <p><b>Description:</b> {forecastItem.description}</p>
+                  <p><b>Wind Speed:</b> {forecastItem.windSpeed} m/s</p>
                 </div>
-              )}
-            </div>
-            <div className={styles.forecastRightCol}>
-              <div className={styles.forecastImage}>
-                <ImageContainer weather={forecastItem.weather[0].main} />
+              </div>
+              <div className={styles.forecastRightCol}>
+                <div className={styles.forecastImage}>
+                  <ImageContainer weather={forecastItem.weather} />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
+
     </div>
   )
 }

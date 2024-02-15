@@ -1,11 +1,13 @@
-import styles from './ImageContainer.module.css';
-
-import images from '../../images/clear.png'
+import images from '../../images/clear.png';
 
 export default function ImageContainer({ weather }: IImageContainerProps) {
+    if (!weather) {
+        return null;
+    }
 
     const getImageForWeather = (weather: string) => {
-        switch (weather.toLowerCase()) {
+        const lowercaseWeather = weather.toLowerCase();
+        switch (lowercaseWeather) {
             case 'clouds':
                 return 'clouds.png';
             case 'sunny':
@@ -13,7 +15,8 @@ export default function ImageContainer({ weather }: IImageContainerProps) {
             case 'snow':
                 return 'snow.png';
             default:
-                return 'clear.png'; 
+                console.warn(`Unsupported weather: ${lowercaseWeather}`);
+                return 'clear.png';
         }
     };
 
@@ -24,4 +27,4 @@ export default function ImageContainer({ weather }: IImageContainerProps) {
     return (
         <img src={imageUrl} alt={weather} />
     );
-};
+}
