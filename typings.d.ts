@@ -62,18 +62,21 @@ interface ICurrentWeather {
 }
 
 interface IFiveDayForecast {
-  dt_txt: string;
-  main: {
-    temp: number;
-  };
-  weather: {
-    main: string;
-    description: string;
+  list: {
+    dt_txt: string;
+    main: {
+      temp: number;
+    };
+    weather: {
+      main: string;
+      description: string;
+    }[];
+    wind: {
+      speed: number;
+    };
   }[];
-  wind: {
-    speed: number;
-  };
 }
+
 
 interface IImageContainerProps {
     weather: string;
